@@ -28,6 +28,7 @@ public class BalanceSheet {
                         break;
                     case "-":
                         entries.remove(ce);
+                        System.out.println("Removed current Entry");
                         break;
                 }
                 System.out.println("Press + to add entry, - to delete entry");
