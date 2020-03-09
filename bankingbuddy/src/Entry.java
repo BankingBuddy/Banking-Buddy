@@ -1,14 +1,12 @@
 import java.util.Date;
 
 public class Entry {
-    private String type;
+
+    private String type;    //Expenditure/Income
     private Double amount;
     private String item;
     private Date timeStamp;
     private Category transactionCategory;
-
-    Entry(){
-    }
 
     public String getItem() {
         return item;
@@ -22,7 +20,11 @@ public class Entry {
         return type;
     }
 
-    public Category getTransCat() {
+    public Date getTimeStamp(){
+        return timeStamp;
+    }
+
+    public Category getTransactionCategory() {
         return transactionCategory;
     }
 
@@ -42,7 +44,7 @@ public class Entry {
         this.timeStamp = timeStamp;
     }
 
-    public void setTransCat(Category transactionCategory) {
+    public void setTransactionCategory(Category transactionCategory) {
         this.transactionCategory = transactionCategory;
     }
 }

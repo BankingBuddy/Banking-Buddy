@@ -1,9 +1,9 @@
-public class Goals {
+public class Goal {
 
     private String goalName;
     private double goalAmount;
 
-    public Goals(String goalName, Double goalAmount){
+    public Goal(String goalName, Double goalAmount){
         this.goalName = goalName;
         this.goalAmount = goalAmount;
     }
