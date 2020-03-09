@@ -8,41 +8,20 @@ public class BalanceSheet {
 
     private List<Entry> entries;
 
-    private int ce;
+    private List<Goals> goals;
 
     private BalanceSheet(){
-        ce = 0;
+        goals = new ArrayList<>();
         entries = new ArrayList<>();
     }
-    private void modifySheet(){
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("Press + to add entry, - to delete entry");
-        try{
-            String in;
-            while (!(in = br.readLine()).equals("quit")){
-                switch (in){
-                    case "+":
-                        Entry en = new Entry();
-                        en.run();
-                        entries.add(en);
-                        break;
-                    case "-":
-                        entries.remove(ce);
-                        System.out.println("Removed current Entry");
-                        break;
-                }
-                System.out.println("Press + to add entry, - to delete entry");
-            }
-        } catch (IOException e){
-            e.printStackTrace();
-        }
+    private void addEntry(Entry newEntry){
+        entries.add(newEntry);
+    }
+    private void addGoal(Goals newGoal){
+        goals.add(newGoal);
     }
 
-    public static void main(String[] args) {
-        System.out.println("Welcome to your personal balance sheet");
-        BalanceSheet bs = new BalanceSheet();
-        bs.modifySheet();
-        System.out.println(bs.entries.toString());
-    }
+    private void updateBalanceSheet(Double amount){
 
+    }
 }

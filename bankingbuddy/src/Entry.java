@@ -1,13 +1,20 @@
+import jdk.jfr.Category;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Date;
 
 public class Entry {
     private String type;
 
-    private String amount;
+    private Double amount;
 
     private String item;
+
+    private Date timeStamp;
+
+    private Category transCat;
 
     Entry(){
     }
@@ -16,7 +23,7 @@ public class Entry {
         return item;
     }
 
-    public String getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
@@ -24,18 +31,26 @@ public class Entry {
         return type;
     }
 
-    void run(){
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        try{
-            System.out.println("Are you entering an income or an expenditure?(in/ex)");
-            this.type = br.readLine();
-            System.out.println("What is your item?");
-            this.item = br.readLine();
-            System.out.println("How much was it?");
-            this.amount = br.readLine();
+    public Category getTransCat(){return Category;}
 
-        } catch (IOException e){
-            e.printStackTrace();
-        }
+    public void setItem(String item) {
+        this.item = item;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setTimeStamp(Date timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    public void setTransCat(Category transCat) {
+        this.transCat = transCat;
     }
 }
+
