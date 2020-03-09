@@ -1,20 +1,11 @@
-import jdk.jfr.Category;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Date;
 
 public class Entry {
     private String type;
-
     private Double amount;
-
     private String item;
-
     private Date timeStamp;
-
-    private Category transCat;
+    private Category transactionCategory;
 
     Entry(){
     }
@@ -31,7 +22,9 @@ public class Entry {
         return type;
     }
 
-    public Category getTransCat(){return Category;}
+    public Category getTransCat() {
+        return transactionCategory;
+    }
 
     public void setItem(String item) {
         this.item = item;
@@ -49,8 +42,8 @@ public class Entry {
         this.timeStamp = timeStamp;
     }
 
-    public void setTransCat(Category transCat) {
-        this.transCat = transCat;
+    public void setTransCat(Category transactionCategory) {
+        this.transactionCategory = transactionCategory;
     }
 }
 

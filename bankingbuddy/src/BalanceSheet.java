@@ -1,16 +1,14 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BalanceSheet {
 
-    private List<Entry> entries;
+    private User user;
 
+    private List<Entry> entries;
     private List<Goals> goals;
 
-    private BalanceSheet(){
+    public BalanceSheet(){
         goals = new ArrayList<>();
         entries = new ArrayList<>();
     }
@@ -21,7 +19,7 @@ public class BalanceSheet {
         goals.add(newGoal);
     }
 
-    private void updateBalanceSheet(Double amount){
-
+    private void updateBalance(Double amount){
+        user.getWallet().deposit(amount);
     }
 }
