@@ -1,37 +1,61 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 public class User {
     private String name;
     private Wallet wallet;
-
-    public User(){
-        registerUser();
-    }
-
-    public User(String name, Wallet wallet){
-        this.name = name;
-        this.wallet = wallet;
-    }
+    private ArrayList<Entry> entries = new ArrayList<>();
+    private ArrayList<Category> categories = new ArrayList<>();
+    private ArrayList<Goal> goals = new ArrayList<>();
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name){
+        this.name = name;
     }
 
     public Wallet getWallet() {
         return wallet;
     }
 
-    private void registerUser() {
-        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("Enter your name: ");
-        try {
-            name = input.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void setWallet(Wallet wallet){
+        this.wallet = wallet;
+    }
 
-        wallet = new Wallet();
+    public ArrayList<Entry> getEntries(){
+        return entries;
+    }
+
+    public void setEntries(ArrayList<Entry> entries){
+        this.entries = entries;
+    }
+
+    public void addEntry(Entry entry){
+        entries.add(entry);
+    }
+
+    public ArrayList<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(ArrayList<Category> categories) {
+        this.categories = categories;
+    }
+
+    public void addCategory(Category category){
+        categories.add(category);
+    }
+
+    public ArrayList<Goal> getGoals(){
+        return goals;
+    }
+
+    public void setGoals(ArrayList<Goal> goals){
+        this.goals = goals;
+    }
+
+    public void addGoal(Goal goal){
+        goals.add(goal);
     }
 }
