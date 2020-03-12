@@ -1,21 +1,28 @@
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
 public class UserView {
     Scanner input;
+    NumberFormat defaultFormat = NumberFormat.getCurrencyInstance();
 
     public void displayUserDetails(String name, BigDecimal balance){
         System.out.println("Name: " + name);
-        System.out.println("Balance: " + balance);
+        System.out.println("Balance: " + defaultFormat.format(balance));
     }
 
-    public void displayEntryDetails(String type, String categoryName, BigDecimal amount, Date timeStamp){
-        System.out.println("Type: " + type);
-        System.out.println("Category " + categoryName);
-        System.out.println("Amount: " + amount);
+    public void displayEntryDetails(Entry.Type type, String categoryName, BigDecimal amount, Date timeStamp){
+        System.out.println("Type: " + type.toString().substring(0, 1) + type.toString().substring(1).toLowerCase());
+        System.out.println("Category: " + categoryName);
+        System.out.println("Amount: " + defaultFormat.format(amount));
         System.out.println("TimeStamp: " + timeStamp.toString());
+    }
+
+    public void displayGoalDetails(String goalName, BigDecimal amount){
+        System.out.println("Name: " + goalName);
+        System.out.println("Amount: " + defaultFormat.format(amount));
     }
 
     public String promptStringInput(String message){
@@ -27,6 +34,10 @@ public class UserView {
     public BigDecimal promptBalanceInput(String message){
         System.out.println(message);
         input = new Scanner(System.in);
+        while (!input.hasNextBigDecimal()){
+            System.out.println("Please enter a numerical value.");
+            input.next();
+        }
         return input.nextBigDecimal();
     }
 
