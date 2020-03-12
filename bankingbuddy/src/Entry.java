@@ -53,5 +53,12 @@ public class Entry {
     public void setTransactionCategory(Category transactionCategory) {
         this.transactionCategory = transactionCategory;
     }
+
+    //Checks if the date is before the specified number of days.
+    public boolean youngerThanDate(int days){
+        long currentTime = new Date().getTime();
+        long timeInDays = days * 24 * 60 * 60 * 1000;
+        return timeStamp.getTime() < (currentTime - timeInDays);
+    }
 }
 

@@ -25,6 +25,10 @@ public class UserView {
         System.out.println("Amount: " + defaultFormat.format(amount));
     }
 
+    public void displayMessage(String message){
+        System.out.println(message);
+    }
+
     public String promptStringInput(String message){
         System.out.println(message);
         input = new Scanner(System.in);
@@ -41,10 +45,6 @@ public class UserView {
         return input.nextBigDecimal();
     }
 
-    public void displayMessage(String message){
-        System.out.println(message);
-    }
-
     public int promptOptionInput(String[] options){
         System.out.println("Please select an option.");
         for(int i = 0; i < options.length; i++){
@@ -54,14 +54,39 @@ public class UserView {
         return input.nextInt();
     }
 
-    public int promptSelectCategory(ArrayList<Category> userCategories) {
+    public int promptSelectCategory(ArrayList<Category> userCategories, boolean remove) {
         System.out.println("Please select an Category.");
         int count = 1;
         for(Category category : userCategories){
             System.out.println(count + ") " + category.getCategoryName());
             count++;
         }
-        System.out.println("Or select " + count + " to add a new category.");
+        if (!remove){
+            System.out.println("Or select " + count + " to add a new category.");
+        }
+        input = new Scanner(System.in);
+        return input.nextInt();
+    }
+
+    public int promptSelectEntry(ArrayList<Entry> userEntries) {
+        System.out.println("Please select an Entry.");
+        int count = 1;
+        for(Entry entry : userEntries){
+            System.out.println(count + ") ");
+            displayEntryDetails(entry.getType(), entry.getTransactionCategory().getCategoryName(), entry.getAmount(), entry.getTimeStamp());
+            count++;
+        }
+        input = new Scanner(System.in);
+        return input.nextInt();
+    }
+
+    public int promptSelectGoal(ArrayList<Goal> userGoals){
+        System.out.println("Please select a Goal.");
+        int count = 1;
+        for (Goal goal : userGoals){
+            System.out.println(count + ") " + goal.getGoalName());
+            count++;
+        }
         input = new Scanner(System.in);
         return input.nextInt();
     }
