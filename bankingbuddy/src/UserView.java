@@ -32,7 +32,7 @@ public class UserView {
     public String promptStringInput(String message){
         System.out.println(message);
         input = new Scanner(System.in);
-        return input.next();
+        return input.nextLine();
     }
 
     public BigDecimal promptBalanceInput(String message){
