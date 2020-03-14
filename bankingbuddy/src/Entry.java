@@ -1,25 +1,18 @@
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class Entry {
+public class Entry implements Cloneable{
 
-    private Type type;
     private BigDecimal amount;
-    private String item;
+    private String description;
+    private boolean recurring;
     private Date timeStamp;
     private Category transactionCategory;
+    private Type type;
 
     enum Type {
         INCOME,
         EXPENDITURE
-    }
-
-    public String getItem() {
-        return item;
-    }
-
-    public void setItem(String item) {
-        this.item = item;
     }
 
     public BigDecimal getAmount() {
@@ -28,6 +21,22 @@ public class Entry {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description){
+        this.description = description;
+    }
+
+    public boolean isRecurring() {
+        return recurring;
+    }
+
+    public void setRecurring(boolean recurring){
+        this.recurring = recurring;
     }
 
     public Type getType() {
@@ -59,6 +68,10 @@ public class Entry {
         long currentTime = new Date().getTime();
         long timeInDays = days * 24 * 60 * 60 * 1000;
         return timeStamp.getTime() < (currentTime - timeInDays);
+    }
+
+    protected Object clone() throws CloneNotSupportedException{
+        return super.clone();
     }
 }
 

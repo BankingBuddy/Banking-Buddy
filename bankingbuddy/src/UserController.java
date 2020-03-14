@@ -61,11 +61,23 @@ public class UserController {
         model.setWallet(wallet);
     }
 
+    public void checkRecurringEntries() throws CloneNotSupportedException {
+        for (Entry entry : getUserEntries()){
+            if (entry.isRecurring() && !entry.youngerThanDate(30) && entry.youngerThanDate(31)){
+                Entry recurringEntry = (Entry)entry.clone();
+                recurringEntry.setTimeStamp(new Date());
+                model.addEntry(recurringEntry);
+            }
+        }
+    }
+
     public void selectOptions(){
         String[] options = {"1) Add an entry", "2) Add a category", "3) Add a goal",
                 "4) View my entries", "5) View my goals", "6) View my information",
-                "7) Display analytics", "8) Remove Entry", "9) Remove Category", "10) Remove goal"};
-        while (true){
+                "7) Display analytics", "8) Remove Entry", "9) Remove Category",
+                "10) Remove goal", "11) Exit"};
+        boolean running = true;
+        while (running){
             int selectedOption = view.promptOptionInput(options);
             switch (selectedOption){
                 case 1:
@@ -79,7 +91,7 @@ public class UserController {
                     break;
                 case 4:
                     for (Entry entry : getUserEntries()){
-                        view.displayEntryDetails(entry.getType(), entry.getTransactionCategory().getCategoryName(), entry.getAmount(), entry.getTimeStamp());
+                        view.displayEntryDetails(entry.getType(), entry.getTransactionCategory().getCategoryName(), entry.getAmount(), entry.getDescription(), entry.isRecurring(), entry.getTimeStamp());
                         System.out.println();
                     }
                     break;
@@ -103,6 +115,9 @@ public class UserController {
                     break;
                 case 10:
                     removeGoal();
+                    break;
+                case 11:
+                    running = false;
                     break;
                 default:
                     view.displayMessage("Invalid option chosen, try again.");
@@ -147,11 +162,18 @@ public class UserController {
         BigDecimal amount = view.promptBalanceInput("Enter the amount " + spentOrReceived + ": ");
         newEntry.setAmount(amount);
 
+        String description = view.promptStringInput("Enter description: ");
+        newEntry.setDescription(description);
+
         Date date = new Date();
         newEntry.setTimeStamp(date);
         model.addEntry(newEntry);
 
+        boolean recurring = view.promptBooleanInput("Is this a recurring entry? (yes/no)");
+        newEntry.setRecurring(recurring);
+
         updateWalletBalance(amount, newEntryType);
+        view.displayMessage("Your balance is now: " + getUserWallet().getBalance().toString());
     }
 
     public void makeCategory(){
