@@ -21,9 +21,11 @@ public class UserController {
     private void makeNewEntry(){
         NewEntry newEntryDialog = new NewEntry(model.getCategories());
         newEntryDialog.setVisible(true);
-        Entry newEntry = newEntryDialog.getEntry();
-        model.addEntry(newEntry);
-        view.insertEntry(newEntry);
+        if (newEntryDialog.isMade()){
+            Entry newEntry = newEntryDialog.getEntry();
+            model.addEntry(newEntry);
+            view.insertEntry(newEntry);
+        }
     }
 
     private void makeNewGoal() {

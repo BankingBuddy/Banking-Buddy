@@ -13,6 +13,8 @@ public class NewEntry extends JDialog {
     private JTextField descriptionTextField;
     private JCheckBox recurringCheckBox;
 
+    private boolean made = false;
+
     public NewEntry(List<Category> categories) {
         setContentPane(contentPane);
         getRootPane().setDefaultButton(submitButton);
@@ -31,7 +33,6 @@ public class NewEntry extends JDialog {
 
     public Entry getEntry(){
         Entry newEntry = new Entry();
-        System.out.println(descriptionTextField.getText());
         newEntry.setAmount(new BigDecimal(amountTextField.getText()));
         newEntry.setDescription(descriptionTextField.getText());
         newEntry.setRecurring(recurringCheckBox.isSelected());
@@ -41,11 +42,17 @@ public class NewEntry extends JDialog {
         return newEntry;
     }
 
+    public boolean isMade(){
+        return made;
+    }
+
     private void onOK() {
+        made = true;
         dispose();
     }
 
     private void onCancel() {
+        made = false;
         dispose();
     }
 
