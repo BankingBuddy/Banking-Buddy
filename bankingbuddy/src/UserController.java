@@ -31,14 +31,18 @@ public class UserController {
     private void makeNewGoal() {
         NewGoal newGoalDialog = new NewGoal();
         newGoalDialog.setVisible(true);
-        Goal newGoal = newGoalDialog.getGoal();
-        model.addGoal(newGoal);
-        view.insertGoal(newGoal);
+        if (newGoalDialog.isMade()){
+            Goal newGoal = newGoalDialog.getGoal();
+            model.addGoal(newGoal);
+            view.insertGoal(newGoal);
+        }
     }
 
     private void makeNewCategory(){
         NewCategory newCategoryDialog = new NewCategory();
         newCategoryDialog.setVisible(true);
-        model.addCategory(newCategoryDialog.getCategory());
+        if (newCategoryDialog.isMade()){
+            model.addCategory(newCategoryDialog.getCategory());
+        }
     }
 }

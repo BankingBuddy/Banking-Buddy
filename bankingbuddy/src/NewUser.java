@@ -8,10 +8,13 @@ public class NewUser extends JDialog {
     private JTextField nameTextField;
     private JTextField balanceTextField;
 
+    private boolean made;
+
     public NewUser() {
         setContentPane(contentPane);
         getRootPane().setDefaultButton(submitButton);
         setModal(true);
+        setTitle("Register");
         pack();
 
         submitButton.addActionListener(e -> onOK());
@@ -26,11 +29,34 @@ public class NewUser extends JDialog {
         return new BigDecimal(balanceTextField.getText());
     }
 
+    public boolean isBigDecimal(JTextField amountTextField){
+        try {
+            new BigDecimal(amountTextField.getText());
+            return true;
+        } catch (NumberFormatException e){
+            return false;
+        }
+    }
+
+    public boolean isMade() {
+        return made;
+    }
+
     private void onOK() {
-        dispose();
+        if (!isBigDecimal(balanceTextField)){
+            JOptionPane.showMessageDialog(null, "Please enter a valid balance.");
+            made = false;
+        } else if (nameTextField.getText().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Please enter a name.");
+            made = false;
+        } else {
+            made = true;
+            dispose();
+        }
     }
 
     private void onCancel() {
+        made = false;
         dispose();
     }
 }

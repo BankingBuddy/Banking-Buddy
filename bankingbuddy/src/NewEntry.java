@@ -13,12 +13,13 @@ public class NewEntry extends JDialog {
     private JTextField descriptionTextField;
     private JCheckBox recurringCheckBox;
 
-    private boolean made = false;
+    private boolean made;
 
     public NewEntry(List<Category> categories) {
         setContentPane(contentPane);
         getRootPane().setDefaultButton(submitButton);
         setModal(true);
+        setTitle("New Entry");
         pack();
 
         DefaultComboBoxModel<Object> categoryComboBoxModel = new DefaultComboBoxModel<>(categories.toArray());
@@ -46,9 +47,29 @@ public class NewEntry extends JDialog {
         return made;
     }
 
+    public boolean isBigDecimal(JTextField amountTextField){
+        try {
+            new BigDecimal(amountTextField.getText());
+            return true;
+        } catch (NumberFormatException e){
+            return false;
+        }
+    }
+
     private void onOK() {
-        made = true;
-        dispose();
+        if (categoryComboBox.getSelectedIndex() == -1){
+            JOptionPane.showMessageDialog(null, "Please select a Category.");
+            made = false;
+        } else if (typeComboBox.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(null, "Please select a Type.");
+            made = false;
+        } else if (!isBigDecimal(amountTextField)) {
+            JOptionPane.showMessageDialog(null, "Please enter a valid Amount.");
+            made = false;
+        } else {
+            made = true;
+            dispose();
+        }
     }
 
     private void onCancel() {
