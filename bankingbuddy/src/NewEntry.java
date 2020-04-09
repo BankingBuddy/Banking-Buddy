@@ -77,4 +77,23 @@ public class NewEntry extends JDialog {
         dispose();
     }
 
+    public void setTypeComboBox(Entry.Type type){
+        typeComboBox.setSelectedItem(type);
+    }
+
+    public void  setCategoryComboBox(Object category){
+        categoryComboBox.setSelectedItem(category);
+    }
+
+    public void setAmountTextField(String amount){
+        amountTextField.setText(amount);
+    }
+
+    public void setDescriptionTextField(String description) {
+        descriptionTextField.setText(description);
+    }
+
+    public void setRecurringCheckBox(boolean set){
+        recurringCheckBox.setSelected(set);
+    }
 }

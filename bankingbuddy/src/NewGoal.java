@@ -58,4 +58,12 @@ public class NewGoal extends JDialog {
         made = false;
         dispose();
     }
+
+    public void setNameTextField(String name){
+        nameTextField.setText(name);
+    }
+
+    public void setAmountTextField(String amount){
+        amountTextField.setText(amount);
+    }
 }
