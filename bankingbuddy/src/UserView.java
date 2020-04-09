@@ -14,6 +14,7 @@ public class UserView {
     private JLabel balanceLabel;
     private JButton newCategoryButton;
     private JTable categoriesTable;
+    private JButton deleteButton;
 
     private DefaultTableModel entriesTableModel;
     private DefaultTableModel goalsTableModel;
@@ -61,6 +62,10 @@ public class UserView {
         goalsTableModel.addRow(new Object[]{goal.getGoalName(), goal.getGoalAmount()});
     }
 
+    private void clearTable(DefaultTableModel tableModel){
+        tableModel.setRowCount(0);
+    }
+
     public JButton getNewEntryButton(){
         return newEntryButton;
     }
@@ -71,5 +76,21 @@ public class UserView {
 
     public JButton getNewCategoryButton(){
         return newCategoryButton;
+    }
+
+    public JButton getDeleteButton(){
+        return deleteButton;
+    }
+
+    public void showMessage(String message){
+        JOptionPane.showMessageDialog(null, message);
+    }
+
+    public void clear(){
+        clearTable(entriesTableModel);
+        clearTable(goalsTableModel);
+        clearTable(categoriesTableModel);
+        nameLabel.setText("Name: ");
+        balanceLabel.setText("Balance: ");
     }
 }

@@ -1,16 +1,12 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class User {
+public class User implements Serializable {
     private String name;
     private Wallet wallet;
     private ArrayList<Entry> entries = new ArrayList<>();
     private ArrayList<Category> categories = new ArrayList<>();
     private ArrayList<Goal> goals = new ArrayList<>();
-
-    public User(String name, Wallet wallet){
-        this.name = name;
-        this.wallet = wallet;
-    }
 
     public String getName() {
         return name;

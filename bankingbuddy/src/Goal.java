@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class Goal {
+public class Goal implements Serializable {
 
     private String goalName;
     private BigDecimal goalAmount;

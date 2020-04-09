@@ -1,7 +1,8 @@
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class Entry implements Cloneable{
+public class Entry implements Cloneable, Serializable {
 
     private BigDecimal amount;
     private String description;

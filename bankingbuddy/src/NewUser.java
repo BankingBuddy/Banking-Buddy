@@ -38,6 +38,19 @@ public class NewUser extends JDialog {
         }
     }
 
+    public User getUser(){
+        User newUser = new User();
+        Wallet newWallet = new Wallet();
+
+        String name = nameTextField.getText();
+        BigDecimal balance = new BigDecimal(balanceTextField.getText());
+        newWallet.setBalance(balance);
+
+        newUser.setName(name);
+        newUser.setWallet(newWallet);
+        return newUser;
+    }
+
     public boolean isMade() {
         return made;
     }

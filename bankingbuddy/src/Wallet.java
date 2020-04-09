@@ -1,13 +1,8 @@
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class Wallet {
-    private final BigDecimal budget;
+public class Wallet implements Serializable {
     private BigDecimal balance;
-
-    public Wallet(BigDecimal budget){
-        this.budget = budget;
-        this.balance = budget;
-    }
 
     public BigDecimal getBalance() {
         return balance;
