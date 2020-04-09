@@ -38,11 +38,13 @@ public class UserView {
         entriesTableModel = tableModelNoEdit(null, entriesColumnNames);
         entriesTable.setModel(entriesTableModel);
         entriesTable.setName("Entries");
+        entriesTable.getTableHeader().setReorderingAllowed(false);
 
         String[] goalsColumnNames = {"Name", "Amount"};
         goalsTableModel = tableModelNoEdit(null, goalsColumnNames);
         goalsTable.setModel(goalsTableModel);
         goalsTable.setName("Goals");
+        goalsTable.getTableHeader().setReorderingAllowed(false);
 
         categoriesTableModel = tableModelNoEdit(null, new String[]{"Name"});
         categoriesTable.setModel(categoriesTableModel);
