@@ -11,8 +11,8 @@ public class Entry implements Cloneable{
     private Type type;
 
     enum Type {
-        INCOME,
-        EXPENDITURE
+        Income,
+        Expenditure
     }
 
     public BigDecimal getAmount() {

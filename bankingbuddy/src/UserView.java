@@ -13,9 +13,11 @@ public class UserView {
     private JLabel nameLabel;
     private JLabel balanceLabel;
     private JButton newCategoryButton;
+    private JTable categoriesTable;
 
     private DefaultTableModel entriesTableModel;
     private DefaultTableModel goalsTableModel;
+    private DefaultTableModel categoriesTableModel;
 
     private NumberFormat defaultFormat = NumberFormat.getCurrencyInstance();
 
@@ -33,6 +35,9 @@ public class UserView {
         String[] goalsColumnNames = {"Name", "Amount"};
         goalsTableModel = new DefaultTableModel(null, goalsColumnNames);
         goalsTable.setModel(goalsTableModel);
+
+        categoriesTableModel = new DefaultTableModel(null, new String[]{"Name"});
+        categoriesTable.setModel(categoriesTableModel);
     }
 
     public void setName(String name){
@@ -46,6 +51,10 @@ public class UserView {
     public void insertEntry(Entry entry){
         entriesTableModel.addRow(new Object[]{entry.getType().toString(), entry.getTransactionCategory().getCategoryName(),
         defaultFormat.format(entry.getAmount()), entry.getDescription(), entry.isRecurring(), entry.getTimeStamp().toString()});
+    }
+
+    public void insertCategory(Category category){
+        categoriesTableModel.addRow(new Object[]{category.getCategoryName()});
     }
 
     public void insertGoal(Goal goal){

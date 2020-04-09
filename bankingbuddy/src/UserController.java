@@ -42,7 +42,9 @@ public class UserController {
         NewCategory newCategoryDialog = new NewCategory();
         newCategoryDialog.setVisible(true);
         if (newCategoryDialog.isMade()){
-            model.addCategory(newCategoryDialog.getCategory());
+            Category newCategory = newCategoryDialog.getCategory();
+            model.addCategory(newCategory);
+            view.insertCategory(newCategory);
         }
     }
 }
