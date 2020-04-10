@@ -1,8 +1,9 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.File;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class UserController {
     private User model;
@@ -41,6 +42,7 @@ public class UserController {
         view.getEntriesTable().addMouseListener(mouseAdapter(view.getEntriesTable()));
         view.getGoalsTable().addMouseListener(mouseAdapter(view.getGoalsTable()));
         view.getCategoriesTable().addMouseListener(mouseAdapter(view.getCategoriesTable()));
+        view.getSortByComboBox().addItemListener(this::sortEntries);
     }
 
     private void makeNewEntry(){
@@ -79,6 +81,32 @@ public class UserController {
             model.addCategory(newCategory);
             view.insertCategory(newCategory);
             updateData();
+        }
+    }
+
+    private void sortEntries(ItemEvent e){
+        if (e.getStateChange() == ItemEvent.SELECTED){
+            switch (e.getItem().toString()){
+                case "Date":
+                    model.getEntries().sort(Collections.reverseOrder(Comparator.comparing(Entry::getTimeStamp)));
+                    break;
+                case "Type":
+                    model.getEntries().sort(Comparator.comparing(o -> o.getType().toString().toLowerCase()));
+                    break;
+                case "Category":
+                    model.getEntries().sort(Comparator.comparing(o -> o.getTransactionCategory().getCategoryName().toLowerCase()));
+                    break;
+                case "Amount":
+                    model.getEntries().sort(Collections.reverseOrder(Comparator.comparing(Entry::getAmount)));
+                    break;
+                case "Description":
+                    model.getEntries().sort(Comparator.comparing(o -> o.getDescription().toLowerCase()));
+                    break;
+                case "Recurring":
+                    model.getEntries().sort(Collections.reverseOrder(Comparator.comparing(Entry::isRecurring)));
+                    break;
+            }
+            view.updateEntryTable(model.getEntries());
         }
     }
 

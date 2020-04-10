@@ -2,6 +2,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 
 public class UserView {
     private JPanel rootPanel;
@@ -86,6 +87,13 @@ public class UserView {
         categoriesTableModel.setValueAt(category.getCategoryName(), rowIndex, 0);
     }
 
+    public void updateEntryTable(ArrayList<Entry> entries){
+        clearTable(entriesTableModel);
+        for (Entry entry : entries){
+            insertEntry(entry);
+        }
+    }
+
     public void removeRow(DefaultTableModel table, int rowIndex){
         table.removeRow(rowIndex);
     }
@@ -120,6 +128,10 @@ public class UserView {
 
     public JTable getCategoriesTable(){
         return categoriesTable;
+    }
+
+    public JComboBox getSortByComboBox(){
+        return sortByComboBox;
     }
 
     public void showMessage(String message){
