@@ -132,6 +132,7 @@ public class UserController {
                 Entry previousEntry = model.getEntries().get(rowIndex);
                 NewEntry newEntryDialog = new NewEntry(model.getCategories());
                 newEntryDialog.setTitle("Edit Entry");
+                newEntryDialog.getSubmitButton().setText("Update");
                 newEntryDialog.setAmountTextField(previousEntry.getAmount().toString());
                 newEntryDialog.setDescriptionTextField(previousEntry.getDescription());
                 newEntryDialog.setCategoryComboBox(previousEntry.getTransactionCategory());
@@ -150,6 +151,7 @@ public class UserController {
                 Goal previousGoal = model.getGoals().get(rowIndex);
                 NewGoal newGoalDialog = new NewGoal();
                 newGoalDialog.setTitle("Edit Goal");
+                newGoalDialog.getSubmitButton().setText("Update");
                 newGoalDialog.setNameTextField(previousGoal.getGoalName());
                 newGoalDialog.setAmountTextField(previousGoal.getGoalAmount().toString());
                 newGoalDialog.setVisible(true);
@@ -164,6 +166,7 @@ public class UserController {
                 Category previousCategory = model.getCategories().get(rowIndex);
                 NewCategory newCategoryDialog = new NewCategory();
                 newCategoryDialog.setTitle("Edit Category");
+                newCategoryDialog.getSubmitButton().setText("Update");
                 newCategoryDialog.setNameTextField(previousCategory.getCategoryName());
                 newCategoryDialog.setVisible(true);
                 if (newCategoryDialog.isMade()){

@@ -77,6 +77,10 @@ public class NewEntry extends JDialog {
         dispose();
     }
 
+    public JButton getSubmitButton(){
+        return submitButton;
+    }
+
     public void setTypeComboBox(Entry.Type type){
         typeComboBox.setSelectedItem(type);
     }

@@ -42,6 +42,10 @@ public class NewCategory extends JDialog {
         dispose();
     }
 
+    public JButton getSubmitButton(){
+        return submitButton;
+    }
+
     public void setNameTextField(String name){
         nameTextField.setText(name);
     }

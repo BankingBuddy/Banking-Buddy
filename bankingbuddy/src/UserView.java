@@ -1,10 +1,5 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 
@@ -20,12 +15,13 @@ public class UserView {
     private JButton newCategoryButton;
     private JTable categoriesTable;
     private JButton deleteButton;
+    private JComboBox sortByComboBox;
 
-    private DefaultTableModel entriesTableModel;
-    private DefaultTableModel goalsTableModel;
-    private DefaultTableModel categoriesTableModel;
+    private final DefaultTableModel entriesTableModel;
+    private final DefaultTableModel goalsTableModel;
+    private final DefaultTableModel categoriesTableModel;
 
-    private NumberFormat defaultFormat = NumberFormat.getCurrencyInstance();
+    private final NumberFormat defaultFormat = NumberFormat.getCurrencyInstance();
 
     public UserView() {
         JFrame frame = new JFrame("Banking Buddy");
@@ -34,19 +30,19 @@ public class UserView {
         frame.pack();
         frame.setVisible(true);
 
-        String[] entriesColumnNames = {"Type", "Category", "Amount", "Description", "Recurring", "Time"};
-        entriesTableModel = tableModelNoEdit(null, entriesColumnNames);
+        String[] entriesColumnNames = {"Time", "Type", "Category", "Amount", "Description", "Recurring"};
+        entriesTableModel = tableModelNoEdit(entriesColumnNames);
         entriesTable.setModel(entriesTableModel);
         entriesTable.setName("Entries");
         entriesTable.getTableHeader().setReorderingAllowed(false);
 
         String[] goalsColumnNames = {"Name", "Amount"};
-        goalsTableModel = tableModelNoEdit(null, goalsColumnNames);
+        goalsTableModel = tableModelNoEdit(goalsColumnNames);
         goalsTable.setModel(goalsTableModel);
         goalsTable.setName("Goals");
         goalsTable.getTableHeader().setReorderingAllowed(false);
 
-        categoriesTableModel = tableModelNoEdit(null, new String[]{"Name"});
+        categoriesTableModel = tableModelNoEdit(new String[]{"Name"});
         categoriesTable.setModel(categoriesTableModel);
         categoriesTable.setName("Categories");
     }
@@ -60,8 +56,8 @@ public class UserView {
     }
 
     public void insertEntry(Entry entry){
-        entriesTableModel.addRow(new Object[]{entry.getType().toString(), entry.getTransactionCategory().getCategoryName(),
-        defaultFormat.format(entry.getAmount()), entry.getDescription(), entry.isRecurring(), entry.getTimeStamp().toString()});
+        entriesTableModel.addRow(new Object[]{entry.getTimeStamp().toString(), entry.getType().toString(), entry.getTransactionCategory().getCategoryName(),
+        defaultFormat.format(entry.getAmount()), entry.getDescription(), entry.isRecurring()});
     }
 
     public void insertGoal(Goal goal){
@@ -73,12 +69,12 @@ public class UserView {
     }
 
     public void editEntry(Entry entry, int rowIndex){
-        entriesTableModel.setValueAt(entry.getType().toString(), rowIndex, 0);
-        entriesTableModel.setValueAt(entry.getTransactionCategory().getCategoryName(), rowIndex, 1);
-        entriesTableModel.setValueAt(defaultFormat.format(entry.getAmount()), rowIndex, 2);
-        entriesTableModel.setValueAt(entry.getDescription(), rowIndex, 3);
-        entriesTableModel.setValueAt(entry.isRecurring(), rowIndex, 4);
-        entriesTableModel.setValueAt(entry.getTimeStamp(), rowIndex, 5);
+        entriesTableModel.setValueAt(entry.getTimeStamp(), rowIndex, 0);
+        entriesTableModel.setValueAt(entry.getType().toString(), rowIndex, 1);
+        entriesTableModel.setValueAt(entry.getTransactionCategory().getCategoryName(), rowIndex, 2);
+        entriesTableModel.setValueAt(defaultFormat.format(entry.getAmount()), rowIndex, 3);
+        entriesTableModel.setValueAt(entry.getDescription(), rowIndex, 4);
+        entriesTableModel.setValueAt(entry.isRecurring(), rowIndex, 5);
     }
 
     public void editGoal(Goal goal, int rowIndex){
@@ -138,8 +134,8 @@ public class UserView {
         balanceLabel.setText("Balance: ");
     }
 
-    private DefaultTableModel tableModelNoEdit(Object[][] data, Object[] columnNames){
-        return new DefaultTableModel(data, columnNames){
+    private DefaultTableModel tableModelNoEdit(Object[] columnNames){
+        return new DefaultTableModel(null, columnNames){
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
