@@ -75,8 +75,9 @@ public class Entry implements Serializable {
 
     //Checks if the date is before the specified number of days.
     public boolean isPastInterval(){
-        long currentTime = new Date().getTime();
-        long timeInDays = recurringInterval * 24 * 60 * 60 * 1000;
-        return timeStamp.getTime() < (currentTime - timeInDays);
+        Date currentDate = new Date();
+        Date entryDate = getTimeStamp();
+        long dayInterval = (long) getRecurringInterval() * 24 * 60 * 60 * 1000;
+        return currentDate.after(new Date(entryDate.getTime() + dayInterval));
     }
 }

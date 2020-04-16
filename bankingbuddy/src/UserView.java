@@ -1,12 +1,19 @@
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.xy.XYDataset;
+
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
 public class UserView {
+    private JFrame frame;
     private JPanel rootPanel;
-    private JTabbedPane tabbedPane1;
+    private JTabbedPane tabbedPane;
     private JButton newEntryButton;
     private JTable entriesTable;
     private JTable goalsTable;
@@ -21,6 +28,9 @@ public class UserView {
     private JButton editCategoryButton;
     private JButton editGoalButton;
     private JComboBox sortByGoalComboBox;
+    private JPanel allChartPanel;
+    private ChartPanel lineChartPanel;
+    private ChartPanel pieChartPanel;
 
     private final DefaultTableModel entriesTableModel;
     private final DefaultTableModel goalsTableModel;
@@ -29,10 +39,11 @@ public class UserView {
     private final NumberFormat defaultFormat = NumberFormat.getCurrencyInstance();
 
     public UserView() {
-        JFrame frame = new JFrame("Banking Buddy");
+        frame = new JFrame("Banking Buddy");
         frame.setContentPane(rootPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
+        allChartPanel.setLayout(new GridLayout(2, 1));
+        changeFrameSize(400, 400);
         frame.setVisible(true);
 
         String[] entriesColumnNames = {"Time", "Type", "Category", "Amount", "Description", "Recurring"};
@@ -63,7 +74,7 @@ public class UserView {
     public void insertEntry(Entry entry){
         String recurring = "-";
         if (entry.isRecurring()){
-            recurring = String.valueOf(entry.getRecurringInterval()) + " Days";
+            recurring = entry.getRecurringInterval() + " Days";
         }
         entriesTableModel.addRow(new Object[]{entry.getTimeStamp().toString(), entry.getType().toString(), entry.getTransactionCategory().getCategoryName(),
         defaultFormat.format(entry.getAmount()), entry.getDescription(), recurring});
@@ -77,6 +88,10 @@ public class UserView {
         categoriesTableModel.addRow(new Object[]{category.getCategoryName()});
     }
 
+    public void insertChartPanel(ChartPanel chartPanel){
+        allChartPanel.add(chartPanel);
+    }
+
     public void editEntry(Entry entry, int rowIndex){
         entriesTableModel.setValueAt(entry.getTimeStamp(), rowIndex, 0);
         entriesTableModel.setValueAt(entry.getType().toString(), rowIndex, 1);
@@ -85,7 +100,7 @@ public class UserView {
         entriesTableModel.setValueAt(entry.getDescription(), rowIndex, 4);
         String recurring = "-";
         if (entry.isRecurring()){
-            recurring = String.valueOf(entry.getRecurringInterval()) + " Days";
+            recurring = entry.getRecurringInterval() + " Days";
         }
         entriesTableModel.setValueAt(recurring, rowIndex, 5);
     }
@@ -169,6 +184,10 @@ public class UserView {
         return editGoalButton;
     }
 
+    public JTabbedPane getTabbedPane(){
+        return tabbedPane;
+    }
+
     public void showMessage(String message){
         JOptionPane.showMessageDialog(null, message);
     }
@@ -188,5 +207,9 @@ public class UserView {
                 return false;
             }
         };
+    }
+
+    public void changeFrameSize(int width, int height){
+        frame.setSize(width, height);
     }
 }

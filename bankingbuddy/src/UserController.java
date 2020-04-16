@@ -1,4 +1,11 @@
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.xy.XYDataset;
+
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
@@ -48,6 +55,7 @@ public class UserController {
                 view.insertGoal(goal);
             }
         }
+        initializeChart();
     }
 
     private Entry cloneEntry(Entry entry){
@@ -56,7 +64,7 @@ public class UserController {
         clone.setAmount(entry.getAmount());
         clone.setRecurringInterval(entry.getRecurringInterval());
         clone.setDescription(entry.getDescription());
-        clone.setRecurring(entry.isRecurring());
+        clone.setRecurring(true);
         clone.setTransactionCategory(entry.getTransactionCategory());
         clone.setTimeStamp(new Date());
         return clone;
@@ -75,6 +83,20 @@ public class UserController {
         view.getEditEntryButton().addActionListener(e -> edit(view.getEntriesTable(), view.getEntriesTable().getSelectedRow()));
         view.getEditCategoryButton().addActionListener(e -> edit(view.getCategoriesTable(), view.getCategoriesTable().getSelectedRow()));
         view.getEditGoalButton().addActionListener(e -> edit(view.getGoalsTable(), view.getGoalsTable().getSelectedRow()));
+        view.getTabbedPane().addChangeListener(this::updateTab);
+    }
+
+    public void initializeChart(){
+        Analysis analyser = new Analysis();
+        XYDataset lineDataset = analyser.createLineDataset();
+        JFreeChart lineChart = analyser.createChart(lineDataset);
+        ChartPanel lineChartPanel = new ChartPanel(lineChart);
+        view.insertChartPanel(lineChartPanel);
+
+        DefaultPieDataset pieDataset = analyser.createPieDataset();
+        JFreeChart pieChart = analyser.createChart(pieDataset);
+        ChartPanel pieChartPanel = new ChartPanel(pieChart);
+        view.insertChartPanel(pieChartPanel);
     }
 
     private void makeNewEntry(){
@@ -171,6 +193,22 @@ public class UserController {
 
     private void updateData(){
         new Serializer().serialize("user.ser", model);
+    }
+
+    private void updateTab(ChangeEvent e){
+        if (e.getSource() instanceof JTabbedPane){
+            JTabbedPane pane = (JTabbedPane) e.getSource();
+            switch (pane.getSelectedIndex()){
+                case 0:
+                    view.changeFrameSize(400,400);
+                    break;
+                case 4:
+                    view.changeFrameSize(800, 800);
+                    break;
+                default:
+                    view.changeFrameSize(600,600);
+            }
+        }
     }
 
     private void deleteUser() {
