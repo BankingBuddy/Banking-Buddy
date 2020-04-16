@@ -13,6 +13,8 @@ public class BankingBuddy {
             if (newUser.isMade()){
                 user = newUser.getUser();
                 new Serializer().serialize(filePath, user);
+            }else{
+                System.exit(0);
             }
         }
 
