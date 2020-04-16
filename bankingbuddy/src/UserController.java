@@ -88,12 +88,12 @@ public class UserController {
 
     public void initializeChart(){
         Analysis analyser = new Analysis();
-        XYDataset lineDataset = analyser.createLineDataset();
+        XYDataset lineDataset = analyser.createLineDataset(model.getEntries());
         JFreeChart lineChart = analyser.createChart(lineDataset);
         ChartPanel lineChartPanel = new ChartPanel(lineChart);
         view.insertChartPanel(lineChartPanel);
 
-        DefaultPieDataset pieDataset = analyser.createPieDataset();
+        DefaultPieDataset pieDataset = analyser.createPieDataset(model.getEntries());
         JFreeChart pieChart = analyser.createChart(pieDataset);
         ChartPanel pieChartPanel = new ChartPanel(pieChart);
         view.insertChartPanel(pieChartPanel);

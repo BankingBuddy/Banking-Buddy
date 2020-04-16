@@ -11,9 +11,13 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import java.awt.*;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.RoundingMode;
+import java.util.ArrayList;
 
 public class Analysis {
-    public XYDataset createLineDataset(){
+    public XYDataset createLineDataset(ArrayList<Entry> entries){
         XYSeries series1 = new XYSeries("Food");
         series1.add(10, 500);
         series1.add(50, 200);
@@ -52,10 +56,32 @@ public class Analysis {
         return chart;
     }
 
-    public DefaultPieDataset createPieDataset(){
+    public DefaultPieDataset createPieDataset(ArrayList<Entry> entries){
+        BigDecimal totalAmount = new BigDecimal(BigInteger.ZERO);
+        ArrayList<AnalysisCategory> cumulativeCategories = new ArrayList<>();
+        for (Entry entry : entries){
+            totalAmount = totalAmount.add(entry.getAmount());
+            boolean contains = false;
+            for (AnalysisCategory category : cumulativeCategories){
+                if (category.getCategoryName().equals(entry.getTransactionCategory().getCategoryName())){
+                    category.setAmount(category.getAmount().add(entry.getAmount()));
+                    contains = true;
+                    break;
+                }
+            }
+            if (!contains){
+                AnalysisCategory newAnalysisCategory = new AnalysisCategory(entry.getTransactionCategory().getCategoryName());
+                newAnalysisCategory.setAmount(entry.getAmount());
+                cumulativeCategories.add(newAnalysisCategory);
+            }
+        }
+
         DefaultPieDataset dataset = new DefaultPieDataset();
-        dataset.setValue("Food", 43);
-        dataset.setValue("Drink", 57);
+        if (!totalAmount.equals(BigDecimal.ZERO)){
+            for (AnalysisCategory category : cumulativeCategories){
+                dataset.setValue(category.getCategoryName(), category.getAmount().multiply(new BigDecimal(100).divide(totalAmount, RoundingMode.CEILING)).intValueExact());
+            }
+        }
         return dataset;
     }
 
