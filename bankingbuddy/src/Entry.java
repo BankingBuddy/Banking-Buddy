@@ -2,11 +2,12 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class Entry implements Cloneable, Serializable {
+public class Entry implements Serializable {
 
     private BigDecimal amount;
     private String description;
     private boolean recurring;
+    private int recurringInterval;
     private Date timeStamp;
     private Category transactionCategory;
     private Type type;
@@ -40,6 +41,14 @@ public class Entry implements Cloneable, Serializable {
         this.recurring = recurring;
     }
 
+    public int getRecurringInterval(){
+        return recurringInterval;
+    }
+
+    public void setRecurringInterval(int recurringInterval){
+        this.recurringInterval = recurringInterval;
+    }
+
     public Type getType() {
         return type;
     }
@@ -65,13 +74,9 @@ public class Entry implements Cloneable, Serializable {
     }
 
     //Checks if the date is before the specified number of days.
-    public boolean youngerThanDate(int days){
+    public boolean isPastInterval(){
         long currentTime = new Date().getTime();
-        long timeInDays = days * 24 * 60 * 60 * 1000;
+        long timeInDays = recurringInterval * 24 * 60 * 60 * 1000;
         return timeStamp.getTime() < (currentTime - timeInDays);
-    }
-
-    protected Object clone() throws CloneNotSupportedException{
-        return super.clone();
     }
 }

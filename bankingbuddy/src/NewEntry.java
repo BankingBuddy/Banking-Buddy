@@ -1,4 +1,7 @@
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +15,7 @@ public class NewEntry extends JDialog {
     private JTextField amountTextField;
     private JTextField descriptionTextField;
     private JCheckBox recurringCheckBox;
+    private JTextField recurringTextField;
 
     private boolean made;
 
@@ -30,6 +34,10 @@ public class NewEntry extends JDialog {
 
         submitButton.addActionListener(e -> onOK());
         cancelButton.addActionListener(e -> onCancel());
+
+        recurringTextField.setText("Days...");
+        recurringTextField.setForeground(new Color(102, 102, 102));
+        recurringTextField.addFocusListener(focusListener());
     }
 
     public Entry getEntry(){
@@ -37,6 +45,9 @@ public class NewEntry extends JDialog {
         newEntry.setAmount(new BigDecimal(amountTextField.getText()));
         newEntry.setDescription(descriptionTextField.getText());
         newEntry.setRecurring(recurringCheckBox.isSelected());
+        if (recurringCheckBox.isSelected()){
+            newEntry.setRecurringInterval(Integer.parseInt(recurringTextField.getText()));
+        }
         newEntry.setTimeStamp(new Date());
         newEntry.setTransactionCategory((Category) categoryComboBox.getSelectedItem());
         newEntry.setType((Entry.Type) typeComboBox.getSelectedItem());
@@ -56,6 +67,15 @@ public class NewEntry extends JDialog {
         }
     }
 
+    public boolean isInt(JTextField recurringTextField){
+        try{
+            Integer.parseInt(recurringTextField.getText());
+            return true;
+        } catch (NumberFormatException e){
+            return false;
+        }
+    }
+
     private void onOK() {
         if (categoryComboBox.getSelectedIndex() == -1){
             JOptionPane.showMessageDialog(null, "Please select a Category.");
@@ -66,6 +86,9 @@ public class NewEntry extends JDialog {
         } else if (!isBigDecimal(amountTextField)) {
             JOptionPane.showMessageDialog(null, "Please enter a valid Amount.");
             made = false;
+        }else if (recurringCheckBox.isSelected() && !isInt(recurringTextField)){
+            JOptionPane.showMessageDialog(null, "Please enter a valid integer number of Days.");
+            made = false;
         } else {
             made = true;
             dispose();
@@ -75,6 +98,26 @@ public class NewEntry extends JDialog {
     private void onCancel() {
         made = false;
         dispose();
+    }
+
+    private FocusListener focusListener(){
+        return new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (recurringTextField.getText().equals("Days...")){
+                    recurringTextField.setText("");
+                    recurringTextField.setForeground(new Color(51, 51, 51));
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (recurringTextField.getText().equals("")){
+                    recurringTextField.setText("Days...");
+                    recurringTextField.setForeground(new Color(102, 102, 102));
+                }
+            }
+        };
     }
 
     public JButton getSubmitButton(){
@@ -99,5 +142,13 @@ public class NewEntry extends JDialog {
 
     public void setRecurringCheckBox(boolean set){
         recurringCheckBox.setSelected(set);
+    }
+
+    public void setRecurringTextField(String days){
+        recurringTextField.setText(days);
+    }
+
+    public JTextField getRecurringTextField() {
+        return recurringTextField;
     }
 }

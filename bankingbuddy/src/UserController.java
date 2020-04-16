@@ -1,9 +1,13 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 
 public class UserController {
     private User model;
@@ -18,8 +22,19 @@ public class UserController {
         view.setName(model.getName());
         view.setBalance(model.getWallet().getBalance());
         if (model.getEntries().size() > 0){
+            ArrayList<Entry> recurringEntries = new ArrayList<>();
             for (Entry entry : model.getEntries()){
+                if (entry.isRecurring() && entry.isPastInterval()){
+                    Entry recurringEntry = cloneEntry(entry);
+                    recurringEntries.add(recurringEntry);
+                    entry.setRecurring(false);
+                }
                 view.insertEntry(entry);
+            }
+            for (Entry recurringEntry : recurringEntries){
+                model.addEntry(recurringEntry);
+                view.insertEntry(recurringEntry);
+                updateData();
             }
         }
         if (model.getCategories().size() > 0){
@@ -34,6 +49,18 @@ public class UserController {
         }
     }
 
+    private Entry cloneEntry(Entry entry){
+        Entry clone = new Entry();
+        clone.setType(entry.getType());
+        clone.setAmount(entry.getAmount());
+        clone.setRecurringInterval(entry.getRecurringInterval());
+        clone.setDescription(entry.getDescription());
+        clone.setRecurring(entry.isRecurring());
+        clone.setTransactionCategory(entry.getTransactionCategory());
+        clone.setTimeStamp(new Date());
+        return clone;
+    }
+
     public void initialiseController(){
         view.getNewEntryButton().addActionListener(e -> makeNewEntry());
         view.getNewGoalButton().addActionListener(e -> makeNewGoal());
@@ -42,7 +69,11 @@ public class UserController {
         view.getEntriesTable().addMouseListener(mouseAdapter(view.getEntriesTable()));
         view.getGoalsTable().addMouseListener(mouseAdapter(view.getGoalsTable()));
         view.getCategoriesTable().addMouseListener(mouseAdapter(view.getCategoriesTable()));
-        view.getSortByComboBox().addItemListener(this::sortEntries);
+        view.getSortByEntryComboBox().addItemListener(this::sortEntries);
+        view.getSortByGoalComboBox().addItemListener(this::sortGoals);
+        view.getEditEntryButton().addActionListener(e -> edit(view.getEntriesTable(), view.getEntriesTable().getSelectedRow()));
+        view.getEditCategoryButton().addActionListener(e -> edit(view.getCategoriesTable(), view.getCategoriesTable().getSelectedRow()));
+        view.getEditGoalButton().addActionListener(e -> edit(view.getGoalsTable(), view.getGoalsTable().getSelectedRow()));
     }
 
     private void makeNewEntry(){
@@ -58,6 +89,7 @@ public class UserController {
             }
             view.setBalance(model.getWallet().getBalance());
             view.insertEntry(newEntry);
+            sortEntryBy(view.getSortByEntryComboBox().getSelectedItem().toString());
             updateData();
         }
     }
@@ -86,28 +118,50 @@ public class UserController {
 
     private void sortEntries(ItemEvent e){
         if (e.getStateChange() == ItemEvent.SELECTED){
-            switch (e.getItem().toString()){
-                case "Date":
-                    model.getEntries().sort(Collections.reverseOrder(Comparator.comparing(Entry::getTimeStamp)));
-                    break;
-                case "Type":
-                    model.getEntries().sort(Comparator.comparing(o -> o.getType().toString().toLowerCase()));
-                    break;
-                case "Category":
-                    model.getEntries().sort(Comparator.comparing(o -> o.getTransactionCategory().getCategoryName().toLowerCase()));
-                    break;
-                case "Amount":
-                    model.getEntries().sort(Collections.reverseOrder(Comparator.comparing(Entry::getAmount)));
-                    break;
-                case "Description":
-                    model.getEntries().sort(Comparator.comparing(o -> o.getDescription().toLowerCase()));
-                    break;
-                case "Recurring":
-                    model.getEntries().sort(Collections.reverseOrder(Comparator.comparing(Entry::isRecurring)));
-                    break;
-            }
-            view.updateEntryTable(model.getEntries());
+            sortEntryBy(e.getItem().toString());
         }
+    }
+
+    private void sortEntryBy(String item){
+        switch (item){
+            case "Date":
+                model.getEntries().sort(Collections.reverseOrder(Comparator.comparing(Entry::getTimeStamp)));
+                break;
+            case "Type":
+                model.getEntries().sort(Comparator.comparing(o -> o.getType().toString().toLowerCase()));
+                break;
+            case "Category":
+                model.getEntries().sort(Comparator.comparing(o -> o.getTransactionCategory().getCategoryName().toLowerCase()));
+                break;
+            case "Amount":
+                model.getEntries().sort(Collections.reverseOrder(Comparator.comparing(Entry::getAmount)));
+                break;
+            case "Description":
+                model.getEntries().sort(Comparator.comparing(o -> o.getDescription().toLowerCase()));
+                break;
+            case "Recurring":
+                model.getEntries().sort(Collections.reverseOrder(Comparator.comparing(Entry::getRecurringInterval)));
+                break;
+        }
+        view.updateEntryTable(model.getEntries());
+    }
+
+    private void sortGoals(ItemEvent e){
+        if (e.getStateChange() == ItemEvent.SELECTED){
+            sortGoalBy(e.getItem().toString());
+        }
+    }
+
+    private void sortGoalBy(String item){
+        switch (item){
+            case "Name":
+                model.getGoals().sort(Comparator.comparing(o -> o.getGoalName().toLowerCase()));
+                break;
+            case "Amount":
+                model.getGoals().sort(Collections.reverseOrder(Comparator.comparing(Goal::getGoalAmount)));
+                break;
+        }
+        view.updateGoalTable(model.getGoals());
     }
 
     private void updateData(){
@@ -116,6 +170,10 @@ public class UserController {
 
     private void deleteUser() {
         view.clear();
+        model.getEntries().clear();
+        model.getCategories().clear();
+        model.getGoals().clear();
+
         File userFile = new File("user.ser");
         if (userFile.delete()){
             view.showMessage("Data has been deleted.");
@@ -155,6 +213,9 @@ public class UserController {
     }
 
     private void edit(JTable table, int rowIndex){
+        if (rowIndex == -1){
+            return;
+        }
         switch (table.getName()){
             case "Entries":
                 Entry previousEntry = model.getEntries().get(rowIndex);
@@ -166,10 +227,29 @@ public class UserController {
                 newEntryDialog.setCategoryComboBox(previousEntry.getTransactionCategory());
                 newEntryDialog.setTypeComboBox(previousEntry.getType());
                 newEntryDialog.setRecurringCheckBox(previousEntry.isRecurring());
+                if (previousEntry.isRecurring()){
+                    newEntryDialog.getRecurringTextField().setForeground(new Color(51, 51, 51));
+                    newEntryDialog.setRecurringTextField(String.valueOf(previousEntry.getRecurringInterval()));
+                }
                 newEntryDialog.setVisible(true);
+
                 if (newEntryDialog.isMade()){
                     Entry editedEntry = newEntryDialog.getEntry();
-                    //UPDATE THE BALANCE AFTER THE EDIT
+
+                    BigDecimal updatedBalance = model.getWallet().getBalance();
+                    if (previousEntry.getType().equals(Entry.Type.Expenditure)){
+                        updatedBalance = updatedBalance.add(previousEntry.getAmount());
+                    }else{
+                        updatedBalance = updatedBalance.subtract(previousEntry.getAmount());
+                    }
+                    if (editedEntry.getType().equals(Entry.Type.Expenditure)){
+                        updatedBalance = updatedBalance.subtract(editedEntry.getAmount());
+                    }else{
+                        updatedBalance = updatedBalance.add(editedEntry.getAmount());
+                    }
+                    model.getWallet().setBalance(updatedBalance);
+                    view.setBalance(updatedBalance);
+
                     editEntry(previousEntry, editedEntry);
                     view.editEntry(editedEntry, rowIndex);
                     updateData();
@@ -232,6 +312,7 @@ public class UserController {
         oldEntry.setTransactionCategory(newEntry.getTransactionCategory());
         oldEntry.setTimeStamp(newEntry.getTimeStamp());
         oldEntry.setRecurring(newEntry.isRecurring());
+        oldEntry.setRecurringInterval(newEntry.getRecurringInterval());
         oldEntry.setDescription(newEntry.getDescription());
         oldEntry.setAmount(newEntry.getAmount());
     }

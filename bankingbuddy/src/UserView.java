@@ -16,7 +16,11 @@ public class UserView {
     private JButton newCategoryButton;
     private JTable categoriesTable;
     private JButton deleteButton;
-    private JComboBox sortByComboBox;
+    private JComboBox sortByEntryComboBox;
+    private JButton editEntryButton;
+    private JButton editCategoryButton;
+    private JButton editGoalButton;
+    private JComboBox sortByGoalComboBox;
 
     private final DefaultTableModel entriesTableModel;
     private final DefaultTableModel goalsTableModel;
@@ -57,8 +61,12 @@ public class UserView {
     }
 
     public void insertEntry(Entry entry){
+        String recurring = "-";
+        if (entry.isRecurring()){
+            recurring = String.valueOf(entry.getRecurringInterval()) + " Days";
+        }
         entriesTableModel.addRow(new Object[]{entry.getTimeStamp().toString(), entry.getType().toString(), entry.getTransactionCategory().getCategoryName(),
-        defaultFormat.format(entry.getAmount()), entry.getDescription(), entry.isRecurring()});
+        defaultFormat.format(entry.getAmount()), entry.getDescription(), recurring});
     }
 
     public void insertGoal(Goal goal){
@@ -75,7 +83,11 @@ public class UserView {
         entriesTableModel.setValueAt(entry.getTransactionCategory().getCategoryName(), rowIndex, 2);
         entriesTableModel.setValueAt(defaultFormat.format(entry.getAmount()), rowIndex, 3);
         entriesTableModel.setValueAt(entry.getDescription(), rowIndex, 4);
-        entriesTableModel.setValueAt(entry.isRecurring(), rowIndex, 5);
+        String recurring = "-";
+        if (entry.isRecurring()){
+            recurring = String.valueOf(entry.getRecurringInterval()) + " Days";
+        }
+        entriesTableModel.setValueAt(recurring, rowIndex, 5);
     }
 
     public void editGoal(Goal goal, int rowIndex){
@@ -91,6 +103,13 @@ public class UserView {
         clearTable(entriesTableModel);
         for (Entry entry : entries){
             insertEntry(entry);
+        }
+    }
+
+    public void updateGoalTable(ArrayList<Goal> goals){
+        clearTable(goalsTableModel);
+        for (Goal goal : goals){
+            insertGoal(goal);
         }
     }
 
@@ -130,8 +149,24 @@ public class UserView {
         return categoriesTable;
     }
 
-    public JComboBox getSortByComboBox(){
-        return sortByComboBox;
+    public JComboBox getSortByEntryComboBox(){
+        return sortByEntryComboBox;
+    }
+
+    public JComboBox getSortByGoalComboBox(){
+        return sortByGoalComboBox;
+    }
+
+    public JButton getEditEntryButton(){
+        return editEntryButton;
+    }
+
+    public JButton getEditCategoryButton(){
+        return editCategoryButton;
+    }
+
+    public JButton getEditGoalButton(){
+        return editGoalButton;
     }
 
     public void showMessage(String message){
