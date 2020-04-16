@@ -33,6 +33,7 @@ public class UserController {
             }
             for (Entry recurringEntry : recurringEntries){
                 model.addEntry(recurringEntry);
+                updateBalance(recurringEntry);
                 view.insertEntry(recurringEntry);
                 updateData();
             }
@@ -82,16 +83,20 @@ public class UserController {
         if (newEntryDialog.isMade()){
             Entry newEntry = newEntryDialog.getEntry();
             model.addEntry(newEntry);
-            if (newEntry.getType().equals(Entry.Type.Expenditure)){
-                model.getWallet().withdraw(newEntry.getAmount());
-            }else{
-                model.getWallet().deposit(newEntry.getAmount());
-            }
-            view.setBalance(model.getWallet().getBalance());
+            updateBalance(newEntry);
             view.insertEntry(newEntry);
             sortEntryBy(view.getSortByEntryComboBox().getSelectedItem().toString());
             updateData();
         }
+    }
+
+    private void updateBalance(Entry entry){
+        if (entry.getType().equals(Entry.Type.Expenditure)){
+            model.getWallet().withdraw(entry.getAmount());
+        }else{
+            model.getWallet().deposit(entry.getAmount());
+        }
+        view.setBalance(model.getWallet().getBalance());
     }
 
     private void makeNewGoal() {
