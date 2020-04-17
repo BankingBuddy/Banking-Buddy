@@ -88,15 +88,26 @@ public class UserController {
 
     public void initializeChart(){
         Analysis analyser = new Analysis();
-        XYDataset lineDataset = analyser.createLineDataset(model.getEntries());
-        JFreeChart lineChart = analyser.createChart(lineDataset);
+
+        JFreeChart lineChart = analyser.createLineChart(model.getEntries());
         ChartPanel lineChartPanel = new ChartPanel(lineChart);
         view.insertChartPanel(lineChartPanel);
 
-        DefaultPieDataset pieDataset = analyser.createPieDataset(model.getEntries());
-        JFreeChart pieChart = analyser.createChart(pieDataset);
+        JFreeChart pieChart = analyser.createPieChart(model.getEntries());
         ChartPanel pieChartPanel = new ChartPanel(pieChart);
         view.insertChartPanel(pieChartPanel);
+    }
+
+    public void updateCharts(){
+        Analysis analyser = new Analysis();
+
+        JFreeChart lineChart = analyser.createLineChart(model.getEntries());
+        ChartPanel lineChartPanel = new ChartPanel(lineChart);
+        view.updateChartPanel(lineChartPanel, 0);
+
+        JFreeChart pieChart = analyser.createPieChart(model.getEntries());
+        ChartPanel pieChartPanel = new ChartPanel(pieChart);
+        view.updateChartPanel(pieChartPanel, 1);
     }
 
     private void makeNewEntry(){
@@ -109,6 +120,7 @@ public class UserController {
             view.insertEntry(newEntry);
             sortEntryBy(view.getSortByEntryComboBox().getSelectedItem().toString());
             updateData();
+            updateCharts();
         }
     }
 
@@ -216,6 +228,7 @@ public class UserController {
         model.getEntries().clear();
         model.getCategories().clear();
         model.getGoals().clear();
+        updateCharts();
 
         File userFile = new File("user.ser");
         if (userFile.delete()){
@@ -328,6 +341,7 @@ public class UserController {
                 }
                 break;
         }
+        updateCharts();
     }
 
     private void delete(JTable table, int rowIndex){
@@ -348,6 +362,7 @@ public class UserController {
                 updateData();
                 break;
         }
+        updateCharts();
     }
 
     private void editEntry(Entry oldEntry, Entry newEntry){

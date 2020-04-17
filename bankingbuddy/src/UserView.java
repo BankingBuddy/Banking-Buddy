@@ -25,8 +25,6 @@ public class UserView {
     private JButton editGoalButton;
     private JComboBox sortByGoalComboBox;
     private JPanel allChartPanel;
-    private ChartPanel lineChartPanel;
-    private ChartPanel pieChartPanel;
 
     private final DefaultTableModel entriesTableModel;
     private final DefaultTableModel goalsTableModel;
@@ -86,6 +84,11 @@ public class UserView {
 
     public void insertChartPanel(ChartPanel chartPanel){
         allChartPanel.add(chartPanel);
+    }
+
+    public void updateChartPanel(ChartPanel chartPanel, int index){
+        allChartPanel.remove(index);
+        allChartPanel.add(chartPanel, index);
     }
 
     public void editEntry(Entry entry, int rowIndex){

@@ -34,7 +34,8 @@ public class Analysis {
         return dataset;
     }
 
-    public JFreeChart createChart(final XYDataset dataset){
+    public JFreeChart createLineChart(ArrayList<Entry> entries){
+        XYDataset dataset = createLineDataset(entries);
         JFreeChart chart = ChartFactory.createXYLineChart("My Chart", "x", "y", dataset, PlotOrientation.VERTICAL, true, true, false);
 
         XYPlot plot = chart.getXYPlot();
@@ -85,8 +86,8 @@ public class Analysis {
         return dataset;
     }
 
-    public JFreeChart createChart(final DefaultPieDataset dataset){
-        JFreeChart pieChart = ChartFactory.createPieChart("Categories", dataset, false, true, false);
-        return pieChart;
+    public JFreeChart createPieChart(ArrayList<Entry> entries){
+        DefaultPieDataset dataset = createPieDataset(entries);
+        return ChartFactory.createPieChart("Categories", dataset, false, true, false);
     }
 }
