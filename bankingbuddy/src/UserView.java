@@ -4,6 +4,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class UserView {
@@ -24,20 +25,32 @@ public class UserView {
     private JButton editCategoryButton;
     private JButton editGoalButton;
     private JComboBox sortByGoalComboBox;
-    private JPanel allChartPanel;
+    private JPanel lineChartPanel;
+    private JPanel pieChartPanel;
+    private JComboBox pieChartTypeComboBox;
+    private JComboBox lineChartTypeComboBox;
+    private JComboBox rangeComboBox;
+    private JLabel goalLabel;
+    private JLabel amountLabel;
+    private JLabel completedLabel;
+    private JLabel timeLabel;
+    private JLabel moneySpentLabel;
+    private JLabel moneyLeftLabel;
 
     private final DefaultTableModel entriesTableModel;
     private final DefaultTableModel goalsTableModel;
     private final DefaultTableModel categoriesTableModel;
 
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
     private final NumberFormat defaultFormat = NumberFormat.getCurrencyInstance();
 
     public UserView() {
         frame = new JFrame("Banking Buddy");
         frame.setContentPane(rootPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        allChartPanel.setLayout(new GridLayout(2, 1));
-        changeFrameSize(400, 400);
+        changeFrameSize(600, 400);
+        lineChartPanel.setLayout(new GridLayout(1,1));
+        pieChartPanel.setLayout(new GridLayout(1,1));
         frame.setVisible(true);
 
         String[] entriesColumnNames = {"Time", "Type", "Category", "Amount", "Description", "Recurring"};
@@ -46,7 +59,7 @@ public class UserView {
         entriesTable.setName("Entries");
         entriesTable.getTableHeader().setReorderingAllowed(false);
 
-        String[] goalsColumnNames = {"Name", "Amount"};
+        String[] goalsColumnNames = {"Name", "Amount", "Complete By", "Completed"};
         goalsTableModel = tableModelNoEdit(goalsColumnNames);
         goalsTable.setModel(goalsTableModel);
         goalsTable.setName("Goals");
@@ -65,34 +78,71 @@ public class UserView {
         balanceLabel.setText("Balance: " + defaultFormat.format(balance));
     }
 
+    public void setGoal(String name) {
+        goalLabel.setText("Goal: " + name);
+    }
+
+    public void setAmount(BigDecimal amount) {
+        amountLabel.setText("Amount: " + defaultFormat.format(amount));
+    }
+
+    public void setTime(String days) {
+        timeLabel.setText("Time Left: " + days + " days");
+    }
+
+    public void setCompleted(boolean completed) {
+        if (completed){
+            completedLabel.setText("Completed: yes");
+        }else{
+            completedLabel.setText("Completed: no");
+        }
+    }
+
+    public void setMoneySpent(BigDecimal amount){
+        moneySpentLabel.setText("Money Spent: " + defaultFormat.format(amount));
+    }
+
+    public void setMoneyLeft(BigDecimal amount){
+        moneyLeftLabel.setText("Money Left: " + defaultFormat.format(amount));
+    }
+
     public void insertEntry(Entry entry){
         String recurring = "-";
         if (entry.isRecurring()){
             recurring = entry.getRecurringInterval() + " Days";
         }
-        entriesTableModel.addRow(new Object[]{entry.getTimeStamp().toString(), entry.getType().toString(), entry.getTransactionCategory().getCategoryName(),
+        entriesTableModel.addRow(new Object[]{dateFormat.format(entry.getTimeStamp()), entry.getType().toString(), entry.getTransactionCategory().getCategoryName(),
         defaultFormat.format(entry.getAmount()), entry.getDescription(), recurring});
     }
 
     public void insertGoal(Goal goal){
-        goalsTableModel.addRow(new Object[]{goal.getGoalName(), defaultFormat.format(goal.getGoalAmount())});
+        goalsTableModel.addRow(new Object[]{goal.getGoalName(), defaultFormat.format(goal.getGoalAmount()), dateFormat.format(goal.getCompleteBy()), goal.isCompleted()});
     }
 
     public void insertCategory(Category category){
         categoriesTableModel.addRow(new Object[]{category.getCategoryName()});
     }
 
-    public void insertChartPanel(ChartPanel chartPanel){
-        allChartPanel.add(chartPanel);
+    public void insertLineChartPanel(ChartPanel chartPanel){
+        lineChartPanel.add(chartPanel);
     }
 
-    public void updateChartPanel(ChartPanel chartPanel, int index){
-        allChartPanel.remove(index);
-        allChartPanel.add(chartPanel, index);
+    public void insertPieChartPanel(ChartPanel chartPanel){
+        pieChartPanel.add(chartPanel);
+    }
+
+    public void updateLineChartPanel(ChartPanel chartPanel){
+        lineChartPanel.remove(0);
+        lineChartPanel.add(chartPanel);
+    }
+
+    public void updatePieChartPanel(ChartPanel chartPanel){
+        pieChartPanel.remove(0);
+        pieChartPanel.add(chartPanel);
     }
 
     public void editEntry(Entry entry, int rowIndex){
-        entriesTableModel.setValueAt(entry.getTimeStamp(), rowIndex, 0);
+        entriesTableModel.setValueAt(dateFormat.format(entry.getTimeStamp()), rowIndex, 0);
         entriesTableModel.setValueAt(entry.getType().toString(), rowIndex, 1);
         entriesTableModel.setValueAt(entry.getTransactionCategory().getCategoryName(), rowIndex, 2);
         entriesTableModel.setValueAt(defaultFormat.format(entry.getAmount()), rowIndex, 3);
@@ -107,6 +157,8 @@ public class UserView {
     public void editGoal(Goal goal, int rowIndex){
         goalsTableModel.setValueAt(goal.getGoalName(), rowIndex, 0);
         goalsTableModel.setValueAt(defaultFormat.format(goal.getGoalAmount()), rowIndex, 1);
+        goalsTableModel.setValueAt(dateFormat.format(goal.getCompleteBy()), rowIndex, 2);
+        goalsTableModel.setValueAt(goal.isCompleted(), rowIndex, 3);
     }
 
     public void editCategory(Category category, int rowIndex){
@@ -197,6 +249,12 @@ public class UserView {
         clearTable(categoriesTableModel);
         nameLabel.setText("Name: ");
         balanceLabel.setText("Balance: ");
+        moneySpentLabel.setText("Money Spent: ");
+        moneyLeftLabel.setText("Money Left");
+        goalLabel.setText("Name: ");
+        timeLabel.setText("Time Left: ");
+        amountLabel.setText("Amount: ");
+        completedLabel.setText("Completed: ");
     }
 
     private DefaultTableModel tableModelNoEdit(Object[] columnNames){

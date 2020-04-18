@@ -1,10 +1,17 @@
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.DateTickUnit;
+import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.chart.block.BlockBorder;
+import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.time.RegularTimePeriod;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -13,7 +20,9 @@ import java.awt.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class Analysis {
     public XYDataset createLineDataset(ArrayList<Entry> entries){
@@ -37,6 +46,9 @@ public class Analysis {
         JFreeChart chart = ChartFactory.createTimeSeriesChart("Spending's", "Date", "Amount (£)", dataset, true, true, false);
 
         XYPlot plot = chart.getXYPlot();
+        DateAxis xAxis = (DateAxis) plot.getDomainAxis();
+        xAxis.setDateFormatOverride(new SimpleDateFormat("HH:mm:ss"));
+        xAxis.setTickUnit(new DateTickUnit(DateTickUnitType.MINUTE, 3));
 
         XYLineAndShapeRenderer shapeRenderer = new XYLineAndShapeRenderer();
 

@@ -1,24 +1,20 @@
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.data.general.DefaultPieDataset;
-import org.jfree.data.xy.XYDataset;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
+import java.time.*;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 public class UserController {
-    private User model;
-    private UserView view;
+    private final User model;
+    private final UserView view;
 
     public UserController(User model, UserView view){
         this.model = model;
@@ -29,21 +25,7 @@ public class UserController {
         view.setName(model.getName());
         view.setBalance(model.getWallet().getBalance());
         if (model.getEntries().size() > 0){
-            ArrayList<Entry> recurringEntries = new ArrayList<>();
-            for (Entry entry : model.getEntries()){
-                if (entry.isRecurring() && entry.isPastInterval()){
-                    Entry recurringEntry = cloneEntry(entry);
-                    recurringEntries.add(recurringEntry);
-                    entry.setRecurring(false);
-                }
-                view.insertEntry(entry);
-            }
-            for (Entry recurringEntry : recurringEntries){
-                model.addEntry(recurringEntry);
-                updateBalance(recurringEntry);
-                view.insertEntry(recurringEntry);
-                updateData();
-            }
+            checkRecurringEntries();
         }
         if (model.getCategories().size() > 0){
             for (Category category : model.getCategories()){
@@ -52,10 +34,30 @@ public class UserController {
         }
         if (model.getGoals().size() > 0){
             for (Goal goal : model.getGoals()){
+                checkCompletedGoal(goal);
                 view.insertGoal(goal);
             }
+            updateGoalSection();
         }
         initializeChart();
+    }
+
+    private void checkRecurringEntries(){
+        ArrayList<Entry> recurringEntries = new ArrayList<>();
+        for (Entry entry : model.getEntries()){
+            if (entry.isRecurring() && entry.isPastInterval()){
+                Entry recurringEntry = cloneEntry(entry);
+                recurringEntries.add(recurringEntry);
+                entry.setRecurring(false);
+            }
+            view.insertEntry(entry);
+        }
+        for (Entry recurringEntry : recurringEntries){
+            model.addEntry(recurringEntry);
+            updateBalance(recurringEntry);
+            view.insertEntry(recurringEntry);
+            updateData();
+        }
     }
 
     private Entry cloneEntry(Entry entry){
@@ -68,6 +70,35 @@ public class UserController {
         clone.setTransactionCategory(entry.getTransactionCategory());
         clone.setTimeStamp(new Date());
         return clone;
+    }
+
+    private void checkCompletedGoal(Goal goal){
+        Date currentDate = new Date();
+        if (goal.getCompleteBy().before(currentDate)){
+            if (model.getWallet().getBalance().compareTo(goal.getStartingAmount().subtract(goal.getGoalAmount())) > 0){
+                goal.setCompleted(true);
+            }
+        }
+    }
+
+    private void updateGoalSection(){
+        Goal currentGoal = model.getGoals().get(0);
+        for (Goal goal : model.getGoals()){
+            if (!goal.isCompleted() && goal.getCompleteBy().before(currentGoal.getCompleteBy()) && goal.getCompleteBy().after(new Date(System.currentTimeMillis() - 24*3600*1000))){
+                currentGoal = goal;
+            }
+        }
+        view.setAmount(currentGoal.getGoalAmount());
+        view.setGoal(currentGoal.getGoalName());
+        view.setMoneySpent(currentGoal.getStartingAmount().subtract(model.getWallet().getBalance()));
+        view.setMoneyLeft(currentGoal.getGoalAmount().subtract(currentGoal.getStartingAmount().subtract(model.getWallet().getBalance())));
+        view.setCompleted(currentGoal.isCompleted());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentGoal.getCompleteBy());
+        LocalDate date1 = LocalDate.of(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH));
+        LocalDate date2 = LocalDate.now();
+        long daysBetween = ChronoUnit.DAYS.between(date2, date1);
+        view.setTime(Long.toString(daysBetween));
     }
 
     public void initialiseController(){
@@ -91,11 +122,11 @@ public class UserController {
 
         JFreeChart lineChart = analyser.createLineChart(model.getEntries());
         ChartPanel lineChartPanel = new ChartPanel(lineChart);
-        view.insertChartPanel(lineChartPanel);
+        view.insertLineChartPanel(lineChartPanel);
 
         JFreeChart pieChart = analyser.createPieChart(model.getEntries());
         ChartPanel pieChartPanel = new ChartPanel(pieChart);
-        view.insertChartPanel(pieChartPanel);
+        view.insertPieChartPanel(pieChartPanel);
     }
 
     public void updateCharts(){
@@ -103,11 +134,11 @@ public class UserController {
 
         JFreeChart lineChart = analyser.createLineChart(model.getEntries());
         ChartPanel lineChartPanel = new ChartPanel(lineChart);
-        view.updateChartPanel(lineChartPanel, 0);
+        view.updateLineChartPanel(lineChartPanel);
 
         JFreeChart pieChart = analyser.createPieChart(model.getEntries());
         ChartPanel pieChartPanel = new ChartPanel(pieChart);
-        view.updateChartPanel(pieChartPanel, 1);
+        view.updatePieChartPanel(pieChartPanel);
     }
 
     private void makeNewEntry(){
@@ -118,9 +149,10 @@ public class UserController {
             model.addEntry(newEntry);
             updateBalance(newEntry);
             view.insertEntry(newEntry);
-            sortEntryBy(view.getSortByEntryComboBox().getSelectedItem().toString());
+            sortEntryBy(Objects.requireNonNull(view.getSortByEntryComboBox().getSelectedItem()).toString());
             updateData();
             updateCharts();
+            updateGoalSection();
         }
     }
 
@@ -138,9 +170,13 @@ public class UserController {
         newGoalDialog.setVisible(true);
         if (newGoalDialog.isMade()){
             Goal newGoal = newGoalDialog.getGoal();
+            newGoal.setStartingAmount(model.getWallet().getBalance());
             model.addGoal(newGoal);
             view.insertGoal(newGoal);
+            sortGoalBy(Objects.requireNonNull(view.getSortByGoalComboBox().getSelectedItem()).toString());
+            updateGoalSection();
             updateData();
+            updateCharts();
         }
     }
 
@@ -152,6 +188,7 @@ public class UserController {
             model.addCategory(newCategory);
             view.insertCategory(newCategory);
             updateData();
+            updateCharts();
         }
     }
 
@@ -199,6 +236,12 @@ public class UserController {
             case "Amount":
                 model.getGoals().sort(Collections.reverseOrder(Comparator.comparing(Goal::getGoalAmount)));
                 break;
+            case "Completed By":
+                model.getGoals().sort(Collections.reverseOrder(Comparator.comparing(Goal::getCompleteBy)));
+                break;
+            case "Completed":
+                model.getGoals().sort(Collections.reverseOrder(Comparator.comparing(Goal::isCompleted)));
+                break;
         }
         view.updateGoalTable(model.getGoals());
     }
@@ -211,9 +254,6 @@ public class UserController {
         if (e.getSource() instanceof JTabbedPane){
             JTabbedPane pane = (JTabbedPane) e.getSource();
             switch (pane.getSelectedIndex()){
-                case 0:
-                    view.changeFrameSize(400,400);
-                    break;
                 case 4:
                     view.changeFrameSize(800, 800);
                     break;
@@ -309,6 +349,8 @@ public class UserController {
                     editEntry(previousEntry, editedEntry);
                     view.editEntry(editedEntry, rowIndex);
                     updateData();
+                    updateCharts();
+                    updateGoalSection();
                 }
                 break;
             case "Goals":
@@ -318,12 +360,15 @@ public class UserController {
                 newGoalDialog.getSubmitButton().setText("Update");
                 newGoalDialog.setNameTextField(previousGoal.getGoalName());
                 newGoalDialog.setAmountTextField(previousGoal.getGoalAmount().toString());
+                newGoalDialog.setDatePicker(previousGoal.getCompleteBy());
                 newGoalDialog.setVisible(true);
                 if (newGoalDialog.isMade()){
                     Goal editedGoal = newGoalDialog.getGoal();
                     editGoal(previousGoal, editedGoal);
                     view.editGoal(editedGoal, rowIndex);
                     updateData();
+                    updateCharts();
+                    updateGoalSection();
                 }
                 break;
             case "Categories":
@@ -338,6 +383,7 @@ public class UserController {
                     editCategory(previousCategory, editedCategory);
                     view.editCategory(editedCategory, rowIndex);
                     updateData();
+                    updateCharts();
                 }
                 break;
         }
@@ -347,19 +393,31 @@ public class UserController {
     private void delete(JTable table, int rowIndex){
         switch (table.getName()){
             case "Entries":
+                Entry entryToDelete = model.getEntries().get(rowIndex);
+                if (entryToDelete.getType().equals(Entry.Type.Expenditure)){
+                    model.getWallet().setBalance(model.getWallet().getBalance().add(entryToDelete.getAmount()));
+                }else{
+                    model.getWallet().setBalance(model.getWallet().getBalance().subtract(entryToDelete.getAmount()));
+                }
+                view.setBalance(model.getWallet().getBalance());
                 model.getEntries().remove(rowIndex);
                 view.removeRow((DefaultTableModel) table.getModel(), rowIndex);
                 updateData();
+                updateCharts();
+                updateGoalSection();
                 break;
             case "Goals":
                 model.getGoals().remove(rowIndex);
                 view.removeRow((DefaultTableModel) table.getModel(), rowIndex);
                 updateData();
+                updateCharts();
+                updateGoalSection();
                 break;
             case  "Categories":
                 model.getCategories().remove(rowIndex);
                 view.removeRow((DefaultTableModel) table.getModel(), rowIndex);
                 updateData();
+                updateCharts();
                 break;
         }
         updateCharts();
@@ -378,6 +436,8 @@ public class UserController {
     private void editGoal(Goal oldGoal, Goal newGoal){
         oldGoal.setGoalAmount(newGoal.getGoalAmount());
         oldGoal.setGoalName(newGoal.getGoalName());
+        oldGoal.setCompleteBy(newGoal.getCompleteBy());
+        oldGoal.setCompleted(newGoal.isCompleted());
     }
 
     private void editCategory(Category oldCategory, Category newCategory){
