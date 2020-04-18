@@ -134,11 +134,13 @@ public class UserView {
     public void updateLineChartPanel(ChartPanel chartPanel){
         lineChartPanel.remove(0);
         lineChartPanel.add(chartPanel);
+        lineChartPanel.updateUI();
     }
 
     public void updatePieChartPanel(ChartPanel chartPanel){
         pieChartPanel.remove(0);
         pieChartPanel.add(chartPanel);
+        pieChartPanel.updateUI();
     }
 
     public void editEntry(Entry entry, int rowIndex){
@@ -237,6 +239,18 @@ public class UserView {
 
     public JTabbedPane getTabbedPane(){
         return tabbedPane;
+    }
+
+    public JComboBox getPieChartTypeComboBox(){
+        return pieChartTypeComboBox;
+    }
+
+    public JComboBox getLineChartTypeComboBox(){
+        return lineChartTypeComboBox;
+    }
+
+    public JComboBox getRangeComboBox(){
+        return rangeComboBox;
     }
 
     public void showMessage(String message){

@@ -381,7 +381,6 @@
                 </constraints>
                 <properties>
                   <model>
-                    <item value="Goals"/>
                     <item value="Income/Expenditure"/>
                     <item value="Categories"/>
                   </model>
@@ -409,11 +408,11 @@
                 </constraints>
                 <properties>
                   <model>
-                    <item value="Hours"/>
-                    <item value="Days"/>
-                    <item value="Weeks"/>
-                    <item value="Months"/>
-                    <item value="All"/>
+                    <item value="Minute"/>
+                    <item value="Hour"/>
+                    <item value="Day"/>
+                    <item value="Month"/>
+                    <item value="Year"/>
                   </model>
                 </properties>
               </component>
@@ -435,6 +434,14 @@
                     <item value="Expenditure"/>
                     <item value="Income"/>
                   </model>
+                </properties>
+              </component>
+              <component id="27713" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Type:"/>
                 </properties>
               </component>
             </children>

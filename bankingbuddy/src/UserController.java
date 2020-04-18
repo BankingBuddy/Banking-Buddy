@@ -1,5 +1,6 @@
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.DateTickUnitType;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -115,30 +116,57 @@ public class UserController {
         view.getEditCategoryButton().addActionListener(e -> edit(view.getCategoriesTable(), view.getCategoriesTable().getSelectedRow()));
         view.getEditGoalButton().addActionListener(e -> edit(view.getGoalsTable(), view.getGoalsTable().getSelectedRow()));
         view.getTabbedPane().addChangeListener(this::updateTab);
+        view.getPieChartTypeComboBox().addItemListener(this::changeChart);
+        view.getLineChartTypeComboBox().addItemListener(this::changeChart);
+        view.getRangeComboBox().addItemListener(this::changeChart);
     }
 
     public void initializeChart(){
         Analysis analyser = new Analysis();
 
-        JFreeChart lineChart = analyser.createLineChart(model.getEntries());
+        JFreeChart lineChart = analyser.createTypeLineChart(model.getEntries(), DateTickUnitType.MINUTE);
         ChartPanel lineChartPanel = new ChartPanel(lineChart);
         view.insertLineChartPanel(lineChartPanel);
 
-        JFreeChart pieChart = analyser.createPieChart(model.getEntries());
+        JFreeChart pieChart = analyser.createPieChart(model.getEntries(), Entry.Type.Expenditure);
         ChartPanel pieChartPanel = new ChartPanel(pieChart);
         view.insertPieChartPanel(pieChartPanel);
     }
 
     public void updateCharts(){
         Analysis analyser = new Analysis();
-
-        JFreeChart lineChart = analyser.createLineChart(model.getEntries());
+        JFreeChart lineChart;
+        if (view.getLineChartTypeComboBox().getSelectedIndex() == 0){
+            lineChart = analyser.createTypeLineChart(model.getEntries(), getRange());
+        }else{
+            lineChart = analyser.createCategoryLineChart(model.getEntries(), getRange());
+        }
         ChartPanel lineChartPanel = new ChartPanel(lineChart);
         view.updateLineChartPanel(lineChartPanel);
 
-        JFreeChart pieChart = analyser.createPieChart(model.getEntries());
+        JFreeChart pieChart;
+        if (view.getPieChartTypeComboBox().getSelectedIndex() == 0){
+            pieChart = analyser.createPieChart(model.getEntries(), Entry.Type.Expenditure);
+        }else{
+            pieChart = analyser.createPieChart(model.getEntries(), Entry.Type.Income);
+        }
         ChartPanel pieChartPanel = new ChartPanel(pieChart);
         view.updatePieChartPanel(pieChartPanel);
+    }
+
+    private DateTickUnitType getRange(){
+       switch (view.getRangeComboBox().getSelectedIndex()){
+           case 0:
+               return DateTickUnitType.MINUTE;
+           case 1:
+               return DateTickUnitType.HOUR;
+           case 2:
+               return DateTickUnitType.DAY;
+           case 3:
+               return DateTickUnitType.MONTH;
+           default:
+               return DateTickUnitType.YEAR;
+       }
     }
 
     private void makeNewEntry(){
@@ -246,6 +274,12 @@ public class UserController {
         view.updateGoalTable(model.getGoals());
     }
 
+    private void changeChart(ItemEvent e){
+        if(e.getStateChange() == ItemEvent.SELECTED){
+            updateCharts();
+        }
+    }
+
     private void updateData(){
         new Serializer().serialize("user.ser", model);
     }
@@ -254,8 +288,11 @@ public class UserController {
         if (e.getSource() instanceof JTabbedPane){
             JTabbedPane pane = (JTabbedPane) e.getSource();
             switch (pane.getSelectedIndex()){
+                case 0:
+                    view.changeFrameSize(600, 400);
+                    break;
                 case 4:
-                    view.changeFrameSize(800, 800);
+                    view.changeFrameSize(1000, 1000);
                     break;
                 default:
                     view.changeFrameSize(600,600);
