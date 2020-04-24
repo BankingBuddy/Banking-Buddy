@@ -240,6 +240,7 @@
                 </constraints>
                 <properties>
                   <model>
+                    <item value="ID"/>
                     <item value="Date"/>
                     <item value="Type"/>
                     <item value="Category"/>

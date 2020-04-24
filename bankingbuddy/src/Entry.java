@@ -4,6 +4,7 @@ import java.util.Date;
 
 public class Entry implements Serializable {
 
+    private int ID;
     private BigDecimal amount;
     private String description;
     private boolean recurring;
@@ -71,6 +72,14 @@ public class Entry implements Serializable {
 
     public void setTransactionCategory(Category transactionCategory) {
         this.transactionCategory = transactionCategory;
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
     }
 
     //Checks if the date is before the specified number of days.

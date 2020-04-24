@@ -53,7 +53,7 @@ public class UserView {
         pieChartPanel.setLayout(new GridLayout(1,1));
         frame.setVisible(true);
 
-        String[] entriesColumnNames = {"Time", "Type", "Category", "Amount", "Description", "Recurring"};
+        String[] entriesColumnNames = {"ID", "Time", "Type", "Category", "Amount", "Description", "Recurring"};
         entriesTableModel = tableModelNoEdit(entriesColumnNames);
         entriesTable.setModel(entriesTableModel);
         entriesTable.setName("Entries");
@@ -111,7 +111,7 @@ public class UserView {
         if (entry.isRecurring()){
             recurring = entry.getRecurringInterval() + " Days";
         }
-        entriesTableModel.addRow(new Object[]{dateFormat.format(entry.getTimeStamp()), entry.getType().toString(), entry.getTransactionCategory().getCategoryName(),
+        entriesTableModel.addRow(new Object[]{entry.getID(), dateFormat.format(entry.getTimeStamp()), entry.getType().toString(), entry.getTransactionCategory().getCategoryName(),
         defaultFormat.format(entry.getAmount()), entry.getDescription(), recurring});
     }
 
@@ -144,16 +144,17 @@ public class UserView {
     }
 
     public void editEntry(Entry entry, int rowIndex){
-        entriesTableModel.setValueAt(dateFormat.format(entry.getTimeStamp()), rowIndex, 0);
-        entriesTableModel.setValueAt(entry.getType().toString(), rowIndex, 1);
-        entriesTableModel.setValueAt(entry.getTransactionCategory().getCategoryName(), rowIndex, 2);
-        entriesTableModel.setValueAt(defaultFormat.format(entry.getAmount()), rowIndex, 3);
-        entriesTableModel.setValueAt(entry.getDescription(), rowIndex, 4);
+        entriesTableModel.setValueAt(entry.getID(), rowIndex, 0);
+        entriesTableModel.setValueAt(dateFormat.format(entry.getTimeStamp()), rowIndex, 1);
+        entriesTableModel.setValueAt(entry.getType().toString(), rowIndex, 2);
+        entriesTableModel.setValueAt(entry.getTransactionCategory().getCategoryName(), rowIndex, 3);
+        entriesTableModel.setValueAt(defaultFormat.format(entry.getAmount()), rowIndex, 4);
+        entriesTableModel.setValueAt(entry.getDescription(), rowIndex, 5);
         String recurring = "-";
         if (entry.isRecurring()){
             recurring = entry.getRecurringInterval() + " Days";
         }
-        entriesTableModel.setValueAt(recurring, rowIndex, 5);
+        entriesTableModel.setValueAt(recurring, rowIndex, 6);
     }
 
     public void editGoal(Goal goal, int rowIndex){

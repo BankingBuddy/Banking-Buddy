@@ -174,13 +174,16 @@ public class UserController {
         newEntryDialog.setVisible(true);
         if (newEntryDialog.isMade()){
             Entry newEntry = newEntryDialog.getEntry();
+            newEntry.setID(model.getEntries().size() + 1);
             model.addEntry(newEntry);
             updateBalance(newEntry);
             view.insertEntry(newEntry);
             sortEntryBy(Objects.requireNonNull(view.getSortByEntryComboBox().getSelectedItem()).toString());
             updateData();
             updateCharts();
-            updateGoalSection();
+            if (!model.getGoals().isEmpty()){
+                updateGoalSection();
+            }
         }
     }
 
@@ -212,11 +215,22 @@ public class UserController {
         NewCategory newCategoryDialog = new NewCategory();
         newCategoryDialog.setVisible(true);
         if (newCategoryDialog.isMade()){
+            boolean existing = false;
             Category newCategory = newCategoryDialog.getCategory();
-            model.addCategory(newCategory);
-            view.insertCategory(newCategory);
-            updateData();
-            updateCharts();
+            for (Category category : model.getCategories()){
+                if (category.getCategoryName().toLowerCase().equals(newCategory.getCategoryName().toLowerCase())){
+                    existing = true;
+                    break;
+                }
+            }
+            if (!existing){
+                model.addCategory(newCategory);
+                view.insertCategory(newCategory);
+                updateData();
+                updateCharts();
+            }else{
+                view.showMessage("Category already exists.");
+            }
         }
     }
 
@@ -228,6 +242,8 @@ public class UserController {
 
     private void sortEntryBy(String item){
         switch (item){
+            case "ID":
+                model.getEntries().sort(Comparator.comparingInt(Entry::getID));
             case "Date":
                 model.getEntries().sort(Collections.reverseOrder(Comparator.comparing(Entry::getTimeStamp)));
                 break;
@@ -387,7 +403,9 @@ public class UserController {
                     view.editEntry(editedEntry, rowIndex);
                     updateData();
                     updateCharts();
-                    updateGoalSection();
+                    if (!model.getGoals().isEmpty()){
+                        updateGoalSection();
+                    }
                 }
                 break;
             case "Goals":
@@ -416,11 +434,22 @@ public class UserController {
                 newCategoryDialog.setNameTextField(previousCategory.getCategoryName());
                 newCategoryDialog.setVisible(true);
                 if (newCategoryDialog.isMade()){
+                    boolean existing = false;
                     Category editedCategory = newCategoryDialog.getCategory();
-                    editCategory(previousCategory, editedCategory);
-                    view.editCategory(editedCategory, rowIndex);
-                    updateData();
-                    updateCharts();
+                    for (Category category : model.getCategories()){
+                        if (category.getCategoryName().toLowerCase().equals(editedCategory.getCategoryName().toLowerCase())) {
+                            existing = true;
+                            break;
+                        }
+                    }
+                    if (!existing){
+                        editCategory(previousCategory, editedCategory);
+                        view.editCategory(editedCategory, rowIndex);
+                        updateData();
+                        updateCharts();
+                    }else{
+                        view.showMessage("Category already exists.");
+                    }
                 }
                 break;
         }
@@ -441,7 +470,9 @@ public class UserController {
                 view.removeRow((DefaultTableModel) table.getModel(), rowIndex);
                 updateData();
                 updateCharts();
-                updateGoalSection();
+                if (!model.getGoals().isEmpty()){
+                    updateGoalSection();
+                }
                 break;
             case "Goals":
                 model.getGoals().remove(rowIndex);
