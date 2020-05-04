@@ -48,6 +48,11 @@ public class NewUser extends JDialog {
 
         newUser.setName(name);
         newUser.setWallet(newWallet);
+        newUser.addCategory(new Category("Food"));
+        newUser.addCategory(new Category("Savings"));
+        newUser.addCategory(new Category("Loan"));
+        newUser.addCategory(new Category("Entertainment"));
+        newUser.addCategory(new Category("Bills"));
         return newUser;
     }
 
