@@ -327,6 +327,7 @@ public class UserController {
         if (userFile.delete()){
             view.showMessage("Data has been deleted.");
         }
+        System.exit(0);
     }
 
     private MouseAdapter mouseAdapter(JTable table){
