@@ -3,6 +3,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.DateTickUnitType;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.general.DefaultPieDataset;
@@ -14,8 +15,11 @@ import java.awt.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
 
 public class Analysis {
@@ -86,9 +90,12 @@ public class Analysis {
 
     private JFreeChart setProperties(JFreeChart chart, DateTickUnitType range, int dataLength) {
         XYPlot plot = chart.getXYPlot();
+        NumberAxis yAxis = (NumberAxis) plot.getRangeAxis();
+        yAxis.setNumberFormatOverride(new DecimalFormat("0.00"));
+        yAxis.setAutoRangeMinimumSize(1.0);
         DateAxis xAxis = (DateAxis) plot.getDomainAxis();
         xAxis.setDateFormatOverride(new SimpleDateFormat("HH:mm:ss"));
-        xAxis.setTickUnit(new DateTickUnit(range, 20));
+        xAxis.setTickUnit(new DateTickUnit(range, 15));
 
         XYLineAndShapeRenderer shapeRenderer = new XYLineAndShapeRenderer();
 
